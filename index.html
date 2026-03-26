@@ -3,41 +3,692 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Cool Sites</title>
+  <title>a list of sites worth visiting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: system-ui, sans-serif;
-      max-width: 700px;
-      margin: 40px auto;
-      padding: 0 20px;
-      background: #0f0f0f;
-      color: #e0e0e0;
+      background: #0a0a0f;
+      color: #c8c8d4;
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 48px 24px 80px;
     }
-    h1 { color: #fff; }
-    h2 { color: #aaa; border-bottom: 1px solid #333; padding-bottom: 6px; }
-    ul { list-style: none; padding: 0; }
-    li { margin: 8px 0; }
-    a { color: #4ea8ff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 24px;
+      font-weight: 700;
+      color: #f0f0f8;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    h1 span { color: #7c6aff; }
+
+    .subtitle {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #555568;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: #7c6aff;
+      margin: 16px auto 24px;
+    }
+
+    /* ── Controls bar ── */
+    .controls {
+      max-width: 860px;
+      margin: 0 auto 36px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #555568;
+      font-size: 14px;
+      pointer-events: none;
+      font-style: normal;
+    }
+
+    #search {
+      width: 100%;
+      background: #111118;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      padding: 9px 12px 9px 36px;
+      color: #e8e8f0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #search::placeholder { color: #555568; }
+    #search:focus { border-color: rgba(124, 106, 255, 0.4); }
+
+    .view-toggle {
+      display: flex;
+      background: #111118;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .view-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 9px 12px;
+      color: #555568;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .view-btn:hover { color: #c8c8d4; }
+    .view-btn.active { background: #1e1e2e; color: #7c6aff; }
+
+    .view-btn svg { width: 16px; height: 16px; display: block; }
+
+    /* ── Main layout ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #1e1e2e;
+    }
+
+    .section-count {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: #333348;
+      margin-left: 4px;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .tag-tech { background: #1a1a2e; color: #7c6aff; border: 1px solid rgba(124,106,255,0.2); }
+    .tag-fun  { background: #121f14; color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+
+    /* ── GALLERY VIEW ── */
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 10px;
+    }
+
+    .link-card {
+      display: block;
+      background: #111118;
+      border: 1px solid #1e1e2e;
+      border-radius: 10px;
+      padding: 16px 18px;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+
+    .link-card:hover {
+      border-color: rgba(124,106,255,0.3);
+      background: #14141f;
+      transform: translateY(-2px);
+    }
+
+    .link-card:hover .arrow { opacity: 1; transform: translate(1px,-1px); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #e8e8f0;
+      line-height: 1.3;
+    }
+
+    .arrow {
+      font-size: 12px;
+      color: #7c6aff;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: #555568;
+      line-height: 1.5;
+    }
+
+    /* ── LIST VIEW ── */
+    body.list-view .link-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid #1e1e2e;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    body.list-view .link-card {
+      border: none;
+      border-bottom: 1px solid #1e1e2e;
+      border-radius: 0;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      transform: none !important;
+    }
+
+    body.list-view .link-card:last-child { border-bottom: none; }
+
+    body.list-view .link-card:hover {
+      transform: none !important;
+      border-color: transparent;
+    }
+
+    body.list-view .card-top {
+      margin-bottom: 0;
+      min-width: 200px;
+      flex-shrink: 0;
+    }
+
+    body.list-view .card-desc {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    body.list-view .arrow {
+      margin-top: 0;
+      margin-left: 12px;
+      opacity: 0.4;
+    }
+
+    body.list-view .link-card:hover .arrow { opacity: 1; }
+
+    /* ── Search: empty state ── */
+    .section[data-visible="false"] { display: none; }
+
+    .no-results {
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: #333348;
+      padding: 48px 0;
+      display: none;
+    }
+
+    .no-results.visible { display: block; }
+
+    /* ── Search highlight ── */
+    mark {
+      background: rgba(124,106,255,0.25);
+      color: #e8e8f0;
+      border-radius: 2px;
+      padding: 0 1px;
+    }
   </style>
 </head>
 <body>
-  <h1>🔗 My Cool Sites</h1>
-  <p>A curated list of websites I think are worth visiting.</p>
 
-  <h2>🛠 Tools</h2>
-  <ul>
-    <li><a href="https://example.com" target="_blank">Example Tool</a> — short description</li>
-  </ul>
+  <header>
+    <h1>a list of sites <span>worth visiting</span></h1>
+    <p class="subtitle">don't tell anyone</p>
+    <div class="divider"></div>
+  </header>
 
-  <h2>🎨 Design</h2>
-  <ul>
-    <li><a href="https://example.com" target="_blank">Another Site</a> — short description</li>
-  </ul>
+  <div class="controls">
+    <div class="search-wrap">
+      <i class="search-icon">⌕</i>
+      <input type="text" id="search" placeholder="Search by name or description…" autocomplete="off">
+    </div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="btn-gallery" title="Gallery view">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <rect x="1" y="1" width="6" height="6" rx="1"/>
+          <rect x="9" y="1" width="6" height="6" rx="1"/>
+          <rect x="1" y="9" width="6" height="6" rx="1"/>
+          <rect x="9" y="9" width="6" height="6" rx="1"/>
+        </svg>
+      </button>
+      <button class="view-btn" id="btn-list" title="List view">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="1" y1="4" x2="15" y2="4"/>
+          <line x1="1" y1="8" x2="15" y2="8"/>
+          <line x1="1" y1="12" x2="15" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
 
-  <h2>🎮 Fun</h2>
-  <ul>
-    <li><a href="https://example.com" target="_blank">Fun Site</a> — short description</li>
-  </ul>
+  <p class="no-results" id="no-results">no results found</p>
+
+  <main id="main">
+
+    <!-- TECH -->
+    <section class="section" data-category="tech">
+      <div class="section-label">
+        <span class="tag tag-tech">TECH</span>
+        <span class="section-count" id="count-tech"></span>
+      </div>
+      <div class="link-grid" id="grid-tech">
+
+        <a class="link-card" href="https://www.eloshapes.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Elo Shapes</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Compare mouse shapes and sizes side by side</div>
+        </a>
+
+        <a class="link-card" href="https://excalidraw.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Excalidraw</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Whiteboard tool for sketching ideas fast</div>
+        </a>
+
+        <a class="link-card" href="https://christitus.com/windows-tool/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Chris Titus Tool</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Windows utility everyone should run at least once</div>
+        </a>
+
+        <a class="link-card" href="https://ninite.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Ninite</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Install all your essential apps in one shot</div>
+        </a>
+
+        <a class="link-card" href="https://cachedview.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Cached View</span><span class="arrow">↗</span></div>
+          <div class="card-desc">See cached versions of pages that are down</div>
+        </a>
+
+        <a class="link-card" href="https://qifi.org/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">QiFi</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Generate QR codes for Wi-Fi networks instantly</div>
+        </a>
+
+        <a class="link-card" href="https://huggingface.co/spaces/huggingface-projects/QR-code-AI-art-generator" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">AI QR Art</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Turn QR codes into actual art with AI</div>
+        </a>
+
+        <a class="link-card" href="https://www.carsized.com/en/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Car Sized</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Compare car dimensions visually side by side</div>
+        </a>
+
+        <a class="link-card" href="https://unsplash.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Unsplash</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Free high-res photos for anything you're building</div>
+        </a>
+
+        <a class="link-card" href="https://mockuuups.studio/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Mockuuups Studio</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Drop screenshots into device mockups fast</div>
+        </a>
+
+        <a class="link-card" href="https://www.fontgeneratoronline.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Font Generator</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Generate stylized text for bios, usernames, posts</div>
+        </a>
+
+        <a class="link-card" href="https://d3ward.github.io/toolz/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">d3ward Toolz</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Test your browser for ads, trackers, and leaks</div>
+        </a>
+
+        <a class="link-card" href="https://www.adobe.com/express/create/logo" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Adobe Logo Maker</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Quick free logo generator from Adobe Express</div>
+        </a>
+
+        <a class="link-card" href="https://slidesgo.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Slidesgo</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Free presentation templates that don't look cheap</div>
+        </a>
+
+        <a class="link-card" href="https://carrd.co/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Carrd</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Build a clean one-page site in minutes</div>
+        </a>
+
+        <a class="link-card" href="https://chromewebstore.google.com/detail/tasks-for-canvas/kabafodfnabokkkddjbnkgbcbmipdlmb" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Tasks for Canvas</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Chrome extension that improves the Canvas LMS</div>
+        </a>
+
+        <a class="link-card" href="https://www.thetruesize.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">The True Size</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Drag countries around a map to see their real size</div>
+        </a>
+
+        <a class="link-card" href="https://www.tunefind.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Tunefind</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Find the name of any song heard in a show or movie</div>
+        </a>
+
+        <a class="link-card" href="https://www.amazon.com/stylesnap" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Amazon StyleSnap</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Upload a photo and find matching items on Amazon</div>
+        </a>
+
+        <a class="link-card" href="https://haveibeenpwned.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Have I Been Pwned</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Check if your email showed up in a data breach</div>
+        </a>
+
+        <a class="link-card" href="https://www.ventoy.net/en/index.html" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Ventoy</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Put multiple bootable ISOs on one USB drive</div>
+        </a>
+
+        <a class="link-card" href="https://etcher.balena.io/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Balena Etcher</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Flash OS images to USB or SD card, no fuss</div>
+        </a>
+
+        <a class="link-card" href="https://getfancontrol.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Fan Control</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Take full control of your PC fan curves</div>
+        </a>
+
+        <a class="link-card" href="https://www.highrez.co.uk/downloads/xmousebuttoncontrol.htm" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">X-Mouse Button Control</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Remap every mouse button per-app</div>
+        </a>
+
+        <a class="link-card" href="https://www.ccleaner.com/speccy" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Speccy</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Detailed system specs and live temps at a glance</div>
+        </a>
+
+        <a class="link-card" href="https://www.videolan.org/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">VLC</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Plays literally every file format ever created</div>
+        </a>
+
+        <a class="link-card" href="https://monkeytype.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Monkeytype</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Clean, customizable typing speed test</div>
+        </a>
+
+        <a class="link-card" href="https://github.com/localsend/localsend" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">LocalSend</span><span class="arrow">↗</span></div>
+          <div class="card-desc">AirDrop alternative that works across all platforms</div>
+        </a>
+
+        <a class="link-card" href="https://playit.gg/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Playit.gg</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Port forward without touching your router</div>
+        </a>
+
+        <a class="link-card" href="https://windowsgsm.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">WindowsGSM</span><span class="arrow">↗</span></div>
+          <div class="card-desc">GUI for hosting and managing game servers</div>
+        </a>
+
+        <a class="link-card" href="https://www.revouninstaller.com/revo-uninstaller-free-download/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Revo Uninstaller</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Removes apps and hunts down leftover junk</div>
+        </a>
+
+        <a class="link-card" href="https://github.com/massgravel/Microsoft-Activation-Scripts" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">MAS</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Open source Windows and Office activation scripts</div>
+        </a>
+
+        <a class="link-card" href="https://config.office.com/deploymentsettings" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Office Deploy Tool</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Microsoft's own tool to deploy Office for free</div>
+        </a>
+
+        <a class="link-card" href="https://github.com/builtbybel/Flyby11" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Flyby11</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Upgrade to Windows 11 on unsupported hardware</div>
+        </a>
+
+        <a class="link-card" href="https://apps.microsoft.com/detail/9P8LTPGCBZXD" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Wintoys</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Tweak, debloat, and optimize Windows from one app</div>
+        </a>
+
+        <a class="link-card" href="https://seats.aero" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Seats.aero</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Find award flights using your travel points</div>
+        </a>
+
+        <a class="link-card" href="https://www.reddit.com/r/TronScript/wiki/downloads/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">TronScript</span><span class="arrow">↗</span></div>
+          <div class="card-desc">The most thorough PC cleanup and malware removal script</div>
+        </a>
+
+        <a class="link-card" href="https://answers.microsoft.com/en-us/windows/forum/all/restore-old-right-click-context-menu-in-windows-11/a62e797c-eaf3-411b-aeec-e460e6e5a82a" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Fix Win11 Right Click</span><span class="arrow">↗</span></div>
+          <div class="card-desc">One command to restore the classic context menu</div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- FUN -->
+    <section class="section" data-category="fun">
+      <div class="section-label">
+        <span class="tag tag-fun">FUN</span>
+        <span class="section-count" id="count-fun"></span>
+      </div>
+      <div class="link-grid" id="grid-fun">
+
+        <a class="link-card" href="https://randommer.io/random-movies" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Random Movie Picker</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Can't decide what to watch? Let the internet choose</div>
+        </a>
+
+        <a class="link-card" href="https://pointerpointer.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Pointer Pointer</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Wherever you point, someone in a photo points back</div>
+        </a>
+
+        <a class="link-card" href="https://vimm.net/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Vimm's Lair</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Classic ROM vault — every console, every era</div>
+        </a>
+
+        <a class="link-card" href="https://noclip.website/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">noclip</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Fly through game maps in your browser, no clip on</div>
+        </a>
+
+        <a class="link-card" href="https://yarn.co/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Yarn</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Search any quote and find the exact scene it's from</div>
+        </a>
+
+        <a class="link-card" href="https://this-person-does-not-exist.com/en" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Fake People</span><span class="arrow">↗</span></div>
+          <div class="card-desc">AI-generated faces of people who don't exist</div>
+        </a>
+
+        <a class="link-card" href="https://www.youtube.com/watch?v=w21AoTx0ztk" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Download from Archive</span><span class="arrow">↗</span></div>
+          <div class="card-desc">How to borrow and download free books from archive.org</div>
+        </a>
+
+        <a class="link-card" href="https://00s.myretrotvs.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Retro TV — 2000s</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Watch actual 2000s TV like you never left</div>
+        </a>
+
+        <a class="link-card" href="https://www.lofi.cafe/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Lofi Cafe</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Chill lo-fi music with cozy animated backgrounds</div>
+        </a>
+
+        <a class="link-card" href="https://kdramahood.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">KDrama Hood</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Free K-Drama streaming, huge library</div>
+        </a>
+
+        <a class="link-card" href="https://www.asiancrush.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Asian Crush</span><span class="arrow">↗</span></div>
+          <div class="card-desc">K-Drama and Asian films, some free with ads</div>
+        </a>
+
+        <a class="link-card" href="https://valorantping.theloneguy.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Valorant Ping Check</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Test ping to every Valorant server before you queue</div>
+        </a>
+
+        <a class="link-card" href="https://neal.fun/infinite-craft/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Infinite Craft</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Combine elements endlessly — there is no end</div>
+        </a>
+
+        <a class="link-card" href="https://pokerogue.net/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">PokeRogue</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Pokemon meets roguelike — extremely addictive</div>
+        </a>
+
+        <a class="link-card" href="https://mixedname.com/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">Mixed Name</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Generate baby names that blend two cultural origins</div>
+        </a>
+
+        <a class="link-card" href="https://fitgirl-repacks.site/" target="_blank" rel="noopener">
+          <div class="card-top"><span class="card-name">FitGirl Repacks</span><span class="arrow">↗</span></div>
+          <div class="card-desc">Compressed game downloads — you know what this is</div>
+        </a>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const searchInput = document.getElementById('search');
+    const btnGallery  = document.getElementById('btn-gallery');
+    const btnList     = document.getElementById('btn-list');
+    const noResults   = document.getElementById('no-results');
+    const sections    = document.querySelectorAll('.section');
+
+    // Store original text content for each card so we can restore after highlight
+    document.querySelectorAll('.link-card').forEach(card => {
+      card.dataset.name = card.querySelector('.card-name').textContent;
+      card.dataset.desc = card.querySelector('.card-desc').textContent;
+    });
+
+    // View toggle
+    btnGallery.addEventListener('click', () => {
+      document.body.classList.remove('list-view');
+      btnGallery.classList.add('active');
+      btnList.classList.remove('active');
+    });
+
+    btnList.addEventListener('click', () => {
+      document.body.classList.add('list-view');
+      btnList.classList.add('active');
+      btnGallery.classList.remove('active');
+    });
+
+    // Search
+    function highlight(text, query) {
+      if (!query) return text;
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
+    }
+
+    function updateCounts() {
+      sections.forEach(section => {
+        const category = section.dataset.category;
+        const visible  = section.querySelectorAll('.link-card:not([hidden])').length;
+        const total    = section.querySelectorAll('.link-card').length;
+        const counter  = document.getElementById(`count-${category}`);
+        const query    = searchInput.value.trim();
+        counter.textContent = query ? `${visible} / ${total}` : '';
+      });
+    }
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLowerCase();
+      let totalVisible = 0;
+
+      sections.forEach(section => {
+        const cards = section.querySelectorAll('.link-card');
+        let sectionVisible = 0;
+
+        cards.forEach(card => {
+          const name = card.dataset.name;
+          const desc = card.dataset.desc;
+          const matches = !query || name.toLowerCase().includes(query) || desc.toLowerCase().includes(query);
+
+          card.hidden = !matches;
+          if (matches) {
+            sectionVisible++;
+            totalVisible++;
+            card.querySelector('.card-name').innerHTML = highlight(name, query);
+            card.querySelector('.card-desc').innerHTML = highlight(desc, query);
+          }
+        });
+
+        section.style.display = sectionVisible === 0 ? 'none' : '';
+      });
+
+      noResults.classList.toggle('visible', totalVisible === 0);
+      updateCounts();
+    });
+
+    updateCounts();
+  </script>
+
 </body>
 </html>
